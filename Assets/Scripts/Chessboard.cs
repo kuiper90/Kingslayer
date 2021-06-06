@@ -24,8 +24,8 @@ public class Chessboard : MonoBehaviour
     private List<Vector2Int> availableMoves = new List<Vector2Int>();
     private List<ChessPiece> deadWhites = new List<ChessPiece>();
     private List<ChessPiece> deadBlacks = new List<ChessPiece>();
-    private const int TILE_COUNT_X = 8;
-    private const int TILE_COUNT_Y = 8;
+    private const int TILE_COUNT_X = 30;
+    private const int TILE_COUNT_Y = 30;
     private GameObject[,] tiles;
     private Camera currentCamera;
     private Vector2Int currentHover;
@@ -49,9 +49,14 @@ public class Chessboard : MonoBehaviour
             return;
         }
 
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+
         RaycastHit info;
         Ray ray = currentCamera.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out info, 150, LayerMask.GetMask("Tile", "Hover", "Highlight")))
+        if (Physics.Raycast(ray, out info, 15000, LayerMask.GetMask("Tile", "Hover", "Highlight")))
         {
             //Get the indexes of the tile that was hit
             Vector2Int hitPosition = LookupTileIndex(info.transform.gameObject);
@@ -138,8 +143,8 @@ public class Chessboard : MonoBehaviour
     //Generate the chess board
     private void GenerateAllTiles(float tileSize, int tileCountX, int tileCountY)
     {
-        yOffset += transform.position.y;
-        bounds = new Vector3((tileCountX / 2) * tileSize, 0, (tileCountX / 2) * tileSize) + boardCenter;
+        // yOffset += transform.position.y;
+        bounds = new Vector3((tileCountX / 2) * tileSize, yOffset, (tileCountX / 2) * tileSize) + boardCenter;
 
         tiles = new GameObject[tileCountX, tileCountY];
         for (int x = 0; x < tileCountX; x++)
@@ -153,7 +158,6 @@ public class Chessboard : MonoBehaviour
 
     private GameObject GenerateSingleTile(float tileSize, int x, int y)
     {
-        //GameObject tileObject = new GameObject(String.Format("X:{0}, Y:{1}", x, y));
         GameObject tileObject = new GameObject($"X:{x}, Y:{y}");
         tileObject.transform.parent = transform;
 
@@ -186,42 +190,106 @@ public class Chessboard : MonoBehaviour
         int whiteTeam = 0;
         int blackTeam = 1;
 
-        //White team
-        chessPieces[0, 0] = SpawnSinglePiece(ChessPieceType.Rook, whiteTeam);
-        chessPieces[1, 0] = SpawnSinglePiece(ChessPieceType.Knight, whiteTeam);
-        chessPieces[2, 0] = SpawnSinglePiece(ChessPieceType.Bishop, whiteTeam);
-        chessPieces[3, 0] = SpawnSinglePiece(ChessPieceType.Queen, whiteTeam);
-        chessPieces[4, 0] = SpawnSinglePiece(ChessPieceType.King, whiteTeam);
-        chessPieces[5, 0] = SpawnSinglePiece(ChessPieceType.Bishop, whiteTeam);
-        chessPieces[6, 0] = SpawnSinglePiece(ChessPieceType.Knight, whiteTeam);
-        chessPieces[7, 0] = SpawnSinglePiece(ChessPieceType.Rook, whiteTeam);
-        for (int i = 0; i < TILE_COUNT_X; i++)
-        {
-            chessPieces[i, 1] = SpawnSinglePiece(ChessPieceType.Pawn, whiteTeam);
-        }
+        int x = 10;
+        int y = 5;
+        ConvertAndPutPiece(x, y - 2, ChessPieceType.Pawn, blackTeam);
+        ConvertAndPutPiece(x, y - 1, ChessPieceType.Pawn, blackTeam);
+        ConvertAndPutPiece(x, y, ChessPieceType.Pawn, blackTeam);
+        ConvertAndPutPiece(x + 1, y + 1, ChessPieceType.Pawn, blackTeam);
+        ConvertAndPutPiece(x + 1, y + 2, ChessPieceType.Pawn, blackTeam);
+        ConvertAndPutPiece(x + 1, y + 3, ChessPieceType.Pawn, blackTeam);
+        ConvertAndPutPiece(x + 1, y + 4, ChessPieceType.Pawn, blackTeam);
+        ConvertAndPutPiece(x + 2, y + 5, ChessPieceType.Pawn, blackTeam);
+        ConvertAndPutPiece(x + 2, y + 6, ChessPieceType.Pawn, blackTeam);
+        ConvertAndPutPiece(x + 2, y + 7, ChessPieceType.Pawn, blackTeam);
+        ConvertAndPutPiece(x + 1, y + 8, ChessPieceType.Pawn, blackTeam);
+        ConvertAndPutPiece(x + 1, y + 9, ChessPieceType.Pawn, blackTeam);
+        ConvertAndPutPiece(x + 1, y + 10, ChessPieceType.Pawn, blackTeam);
+        ConvertAndPutPiece(x + 1, y + 11, ChessPieceType.Pawn, blackTeam);
+        ConvertAndPutPiece(x, y + 12, ChessPieceType.Pawn, blackTeam);
+        ConvertAndPutPiece(x, y + 13, ChessPieceType.Pawn, blackTeam);
+        ConvertAndPutPiece(x, y + 14, ChessPieceType.Pawn, blackTeam);
 
-        //Black team
-        chessPieces[0, 7] = SpawnSinglePiece(ChessPieceType.Rook, blackTeam);
-        chessPieces[1, 7] = SpawnSinglePiece(ChessPieceType.Knight, blackTeam);
-        chessPieces[2, 7] = SpawnSinglePiece(ChessPieceType.Bishop, blackTeam);
-        chessPieces[3, 7] = SpawnSinglePiece(ChessPieceType.Queen, blackTeam);
-        chessPieces[4, 7] = SpawnSinglePiece(ChessPieceType.King, blackTeam);
-        chessPieces[5, 7] = SpawnSinglePiece(ChessPieceType.Bishop, blackTeam);
-        chessPieces[6, 7] = SpawnSinglePiece(ChessPieceType.Knight, blackTeam);
-        chessPieces[7, 7] = SpawnSinglePiece(ChessPieceType.Rook, blackTeam);
-        for (int i = 0; i < TILE_COUNT_X; i++)
-        {
-            chessPieces[i, 6] = SpawnSinglePiece(ChessPieceType.Pawn, blackTeam);
-        }
+        ConvertAndPutPiece(x, y + 1, ChessPieceType.Bishop, blackTeam);
+        ConvertAndPutPiece(x - 1, y + 2, ChessPieceType.Rook, blackTeam);
+        ConvertAndPutPiece(x, y + 3, ChessPieceType.Rook, blackTeam);
+        ConvertAndPutPiece(x - 1, y + 4, ChessPieceType.Bishop, blackTeam);
+        ConvertAndPutPiece(x + 1, y + 5, ChessPieceType.Bishop, blackTeam);
+        ConvertAndPutPiece(x, y + 6, ChessPieceType.Bishop, blackTeam);
+        ConvertAndPutPiece(x + 1, y + 6, ChessPieceType.Rook, blackTeam);
+        ConvertAndPutPiece(x + 1, y + 7, ChessPieceType.Bishop, blackTeam);
+        ConvertAndPutPiece(x - 1, y + 8, ChessPieceType.Bishop, blackTeam);
+        ConvertAndPutPiece(x, y + 9, ChessPieceType.Rook, blackTeam);
+        ConvertAndPutPiece(x - 1, y + 10, ChessPieceType.Rook, blackTeam);
+        ConvertAndPutPiece(x, y + 11, ChessPieceType.Bishop, blackTeam);
+
+        x = 20;
+
+        ConvertAndPutPiece(x, y - 2, ChessPieceType.Pawn, whiteTeam);
+        ConvertAndPutPiece(x, y - 1, ChessPieceType.Pawn, whiteTeam);
+        ConvertAndPutPiece(x, y, ChessPieceType.Pawn, whiteTeam);
+        ConvertAndPutPiece(x - 1, y + 1, ChessPieceType.Pawn, whiteTeam);
+        ConvertAndPutPiece(x - 1, y + 2, ChessPieceType.Pawn, whiteTeam);
+        ConvertAndPutPiece(x - 1, y + 3, ChessPieceType.Pawn, whiteTeam);
+        ConvertAndPutPiece(x - 1, y + 4, ChessPieceType.Pawn, whiteTeam);
+        ConvertAndPutPiece(x - 2, y + 5, ChessPieceType.Pawn, whiteTeam);
+        ConvertAndPutPiece(x - 2, y + 6, ChessPieceType.Pawn, whiteTeam);
+        ConvertAndPutPiece(x - 2, y + 7, ChessPieceType.Pawn, whiteTeam);
+        ConvertAndPutPiece(x - 1, y + 8, ChessPieceType.Pawn, whiteTeam);
+        ConvertAndPutPiece(x - 1, y + 9, ChessPieceType.Pawn, whiteTeam);
+        ConvertAndPutPiece(x - 1, y + 10, ChessPieceType.Pawn, whiteTeam);
+        ConvertAndPutPiece(x - 1, y + 11, ChessPieceType.Pawn, whiteTeam);
+        ConvertAndPutPiece(x, y + 12, ChessPieceType.Pawn, whiteTeam);
+        ConvertAndPutPiece(x, y + 13, ChessPieceType.Pawn, whiteTeam);
+        ConvertAndPutPiece(x, y + 14, ChessPieceType.Pawn, whiteTeam);
+
+        ConvertAndPutPiece(x, y + 1, ChessPieceType.Bishop, whiteTeam);
+        ConvertAndPutPiece(x + 1, y + 2, ChessPieceType.Rook, whiteTeam);
+        ConvertAndPutPiece(x, y + 3, ChessPieceType.Rook, whiteTeam);
+        ConvertAndPutPiece(x + 1, y + 4, ChessPieceType.Bishop, whiteTeam);
+        ConvertAndPutPiece(x - 1, y + 5, ChessPieceType.Bishop, whiteTeam);
+        ConvertAndPutPiece(x, y + 6, ChessPieceType.Bishop, whiteTeam);
+        ConvertAndPutPiece(x - 1, y + 6, ChessPieceType.Rook, whiteTeam);
+        ConvertAndPutPiece(x - 1, y + 7, ChessPieceType.Bishop, whiteTeam);
+        ConvertAndPutPiece(x + 1, y + 8, ChessPieceType.Bishop, whiteTeam);
+        ConvertAndPutPiece(x, y + 9, ChessPieceType.Rook, whiteTeam);
+        ConvertAndPutPiece(x + 1, y + 10, ChessPieceType.Rook, whiteTeam);
+        ConvertAndPutPiece(x, y + 11, ChessPieceType.Bishop, whiteTeam);
+
+    }
+
+    private void ConvertAndPutPiece(int x, int y, ChessPieceType type, int team)
+    {
+        chessPieces[y, TILE_COUNT_X - x - 1] = SpawnSinglePiece(type, team);
     }
 
     private ChessPiece SpawnSinglePiece(ChessPieceType type, int team)
     {
-        ChessPiece cp = Instantiate(prefabs[(int)type - 1], transform).GetComponent<ChessPiece>();       
+        ChessPiece cp = Instantiate(prefabs[(int)type - 1], transform).GetComponent<ChessPiece>();
 
         cp.type = type;
         cp.team = team;
-        //var ceva = ((team == 0) ? 0 : 6) + ((int)type - 1);
+        if (type == ChessPieceType.Pawn)
+        {
+            cp.gameObject.GetComponentsInChildren<SkinnedMeshRenderer>()[1].material = teamMaterials[team];
+            return cp;
+        }
+        if (type == ChessPieceType.Rook)
+        {
+            cp.setScale(0.022f);
+            cp.gameObject.GetComponentsInChildren<SkinnedMeshRenderer>()[0].material = teamMaterials[team];
+            return cp;
+        }
+
+        if (type == ChessPieceType.Bishop)
+        {
+            cp.gameObject.GetComponentsInChildren<SkinnedMeshRenderer>()[0].material = teamMaterials[team];
+            cp.gameObject.GetComponentsInChildren<SkinnedMeshRenderer>()[1].material = teamMaterials[team];
+            cp.gameObject.GetComponentsInChildren<SkinnedMeshRenderer>()[2].material = teamMaterials[team];
+            cp.gameObject.GetComponentsInChildren<SkinnedMeshRenderer>()[3].material = teamMaterials[team];
+            return cp;
+        }
+
         cp.GetComponent<MeshRenderer>().material = teamMaterials[team];
 
         return cp;
@@ -352,6 +420,7 @@ public class Chessboard : MonoBehaviour
 
         Vector2Int previousPosition = new Vector2Int(cp.currentX, cp.currentY);
 
+
         //Is there another piece on the target position?
         if (chessPieces[x, y] != null)
         {
@@ -400,7 +469,33 @@ public class Chessboard : MonoBehaviour
 
         isWhiteTurn = !isWhiteTurn;
 
+        CheckForRemainingPieces();
+
         return true;
+    }
+
+    private void CheckForRemainingPieces()
+    {
+        int w = 0;
+        int b = 0;
+        for(int i = 0; i < TILE_COUNT_X; i++)
+            for(int j = 0; j < TILE_COUNT_Y; j++)
+                if(chessPieces[i,j] != null)
+                {
+                    if (chessPieces[i, j].team == 0)
+                        w++;
+                    else
+                        b++;
+                }
+
+        if(w == 0)
+        {
+            CheckMate(1);
+        }
+        if(b == 0)
+        {
+            CheckMate(0);
+        }
     }
 
     private Vector2Int LookupTileIndex(GameObject hitInfo)

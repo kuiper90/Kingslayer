@@ -20,7 +20,12 @@ public class ChessPiece : MonoBehaviour
     public ChessPieceType type;
 
     private Vector3 desiredPosition;
-    private Vector3 desiredScale = Vector3.one;
+    private Vector3 desiredScale = new Vector3(0.04f, 0.04f, 0.04f);
+
+    public void setScale(float s)
+    {
+        desiredScale = new Vector3(s, s, s);
+    }
 
     private void Start()
     {
